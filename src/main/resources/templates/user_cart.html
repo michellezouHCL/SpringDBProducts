@@ -13,6 +13,7 @@
 		<input type="submit" value="Logout" />
 	</form>
     <h1>Cart</h1>
+    <a class="navlist" href="/"> Home </a>
     <br/><br/>
     <table border="1" cellpadding="10">
         <thead>
@@ -27,19 +28,19 @@
             </tr>
         </thead>
         <tbody>
-            <tr th:each="product : ${listProducts}">
-                <td th:text="${product.productId}">Product ID</td>
-                <td th:text="${product.productName}">Name</td>
-                <td th:text="${product.productPrice}">Price</td>
-                <td th:text="${product.instockQty}">Instock#</td>
-                 <td  th:text="${product.productQty}">Quantity</td>
-                 <td  th:text="${product.productTotal}" class="count-me">Total</td>
+            <tr th:each="orderProdList : ${orderProdList}">
+                <td th:text="${orderProdList.productId}">Product ID</td>
+                <td th:text="${orderProdList.productName}">Name</td>
+                <td th:text="${orderProdList.productPrice}">Price</td>
+                <td th:text="${orderProdList.instockQty}">Instock#</td>
+                 <td  th:text="${orderProdList.productQty}">Quantity</td>
+                 <td  th:text="${orderProdList.productTotal}" class="count-me">Total</td>
                  <td >
-                 	<a th:href="@{'/addOne/' + ${product.productId}}">&uarr;</a>
+                 	<a th:href="@{'/addOne/' + ${orderProdList.productId}}">&uarr;</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a th:href="@{'/minusOne/' + ${product.productId}}">&darr;</a>
+                    <a th:href="@{'/minusOne/' + ${orderProdList.productId}}">&darr;</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a th:href="@{'/clear/' + ${product.productId}}">clear</a>
+                    <a th:href="@{'/clear/' + ${orderProdList.productId}}">clear</a>
                  </td>
                  
             </tr>

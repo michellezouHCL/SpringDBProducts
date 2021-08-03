@@ -28,7 +28,7 @@ public class ProdService {
 	public Product getProdById(long id) {
 		return pr.findById(id).get();
 	}
-	
+	/*
 	public Product addOne(long id) throws ProdNotFoundException {
 		Product p1=pr.findById(id).orElseThrow(()->new ProdNotFoundException("product not found"));
 		if(p1.getInstockQty()> p1.getProductQty() && p1.getProductQty()>-1)
@@ -45,17 +45,17 @@ public class ProdService {
 		p1.setProductTotal(p1.getProductPrice()*p1.getProductQty());
 		return p1;
 	}
-	
+	*/
 	public void deleteProd(long id) {
 		pr.deleteById(id);
 	}
 
-	public Product clearCart(Long id) throws ProdNotFoundException {
-		Product p1=pr.findById(id).orElseThrow(()->new ProdNotFoundException("product not found"));
-		p1.setProductQty(0);
-		p1.setProductTotal(0);
-		return p1;
-	}
+	/*
+	 * public Product clearCart(Long id) throws ProdNotFoundException { Product
+	 * p1=pr.findById(id).orElseThrow(()->new
+	 * ProdNotFoundException("product not found")); p1.setProductQty(0);
+	 * p1.setProductTotal(0); return p1; }
+	 */
 	
 	
 	

@@ -14,6 +14,7 @@
 	</form>
     <h1>Product List</h1>
     <a href="/new" sec:authorize="hasRole('ROLE_ADMIN')">Create New Product</a>
+    <a sec:authorize="hasRole('ROLE_USER')" href="/cart">Cart</a>
     <br/><br/>
     <table border="1" cellpadding="10">
         <thead>
@@ -23,8 +24,6 @@
                 <th>Price</th>
                 <th>Instock#</th>
                 <th sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
-                <th sec:authorize="hasRole('ROLE_USER')">Quantity</th>		
-                <th sec:authorize="hasRole('ROLE_USER')">Total</th>
                 <th sec:authorize="hasRole('ROLE_USER')">Actions</th>
             </tr>
         </thead>
@@ -39,33 +38,12 @@
                     &nbsp;&nbsp;&nbsp;
                     <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/delete/' + ${product.productId}}">Delete</a>
                  </td>
-                 <td sec:authorize="hasRole('ROLE_USER')" th:text="${product.productQty}">Quantity</td>
-                 <td sec:authorize="hasRole('ROLE_USER')" th:text="${product.productTotal}" class="count-me">Total</td>
                  <td sec:authorize="hasRole('ROLE_USER')">
-                 	<a sec:authorize="hasRole('ROLE_USER')" th:href="@{'/addOne/' + ${product.productId}}">&uarr;</a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a sec:authorize="hasRole('ROLE_USER')" th:href="@{'/minusOne/' + ${product.productId}}">&darr;</a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a sec:authorize="hasRole('ROLE_USER')" th:href="@{'/clear/' + ${product.productId}}">clear</a>
+                 	<a sec:authorize="hasRole('ROLE_USER')" th:href="@{'/addToCart/' + ${product.productId}}">Add To Cart</a>
                  </td>
-                 
             </tr>
         </tbody>
     </table>
 </div>  
-<div align="center" sec:authorize="hasRole('ROLE_USER')">
-	<h4>Total Price: <span id="val"></span></h4> <span id="val"></span>
-</div> 
- <script type="text/javascript">
-	var cell = document.getElementsByClassName("count-me");
-	var val = 0;
-	var i = 0;
-	while (cell[i] != undefined) {
-		val += parseFloat(cell[i].innerHTML);
-		i++;
-	} //end while
-	document.getElementById("val").innerHTML = parseFloat(val).toFixed(2);
-	console.log(parseFloat(val).toFixed(2));
-</script>
 </body>
 </html>

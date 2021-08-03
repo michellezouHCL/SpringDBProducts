@@ -17,10 +17,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "product")
-public class Product {
+@Table(name = "orderListofProd")
+public class OrderProdList {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="order_id")
+	private long orderId;
 	@Column(name = "product_id")
 	private long productId;
 	@Column(name = "product_name")
@@ -29,13 +31,19 @@ public class Product {
 	private float productPrice;
 	@Column(name="instock_qty")
 	private int instockQty;
+	@Column(name = "product_qty")
+	private int productQty;
+	@Column(name = "total")
+	private float productTotal;
 	
 
-	public Product(long productId, String productName, float productPrice, int instockQty) {
+	public OrderProdList(long orderId, long productId, String productName, float productPrice, int instockQty, int productQty) {
+		this.orderId=orderId;
 		this.productId = productId;
 		this.productName = productName;
 		this.productPrice = productPrice;
 		this.instockQty = instockQty;
+		this.productQty = productQty;
+		this.productTotal = productQty*productPrice;
 	}
-	
 }

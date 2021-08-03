@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.michelle.exception.ProdNotFoundException;
+import com.michelle.model.OrderProdList;
 import com.michelle.model.Product;
+import com.michelle.service.OrderProdListService;
 import com.michelle.service.ProdService;
 
 @Controller
@@ -21,6 +23,8 @@ public class AppController {
 	@Autowired
 	ProdService ps;
 	
+	@Autowired
+	OrderProdListService os;
 	
 	@RequestMapping("/")
 	public String viewHomePage(Model model) {
@@ -63,7 +67,7 @@ public class AppController {
 
 	@RequestMapping("/addOne/{id}")
 	public String addOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
-		Product p1=ps.addOne(id);
+		OrderProdList p1=os.addOne(id);
 		/*
 		Order o = new Order();
 		Long userid=(long) 0;
@@ -78,21 +82,36 @@ public class AppController {
 		o.setProdList( ps.listAll());
 		os.saveOrder(o);
 		*/
-		ps.save(p1);
-		return "redirect:/";
+		os.save(p1);
+		
+		return "redirect:/cart";
 	}
 	@RequestMapping("/minusOne/{id}")
 	public String minusOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
-		Product p1=ps.minusOne(id);
-		ps.save(p1);
-		return "redirect:/";
+		OrderProdList p1=os.minusOne(id);
+		os.save(p1);
+		return "redirect:/cart";
 	}
 	@RequestMapping("/clear/{id}")
 	public String clearCart(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
-		Product p1=ps.clearCart(id);
-		ps.save(p1);
-		return "redirect:/";
+		OrderProdList p1=os.clearCart(id);
+		os.save(p1);
+		return "redirect:/cart";
 	}
 	
 	
+	@RequestMapping("/cart")
+	public String cart(Model m) {
+		List<OrderProdList> ol = os.getAll();
+		m.addAttribute("orderProdList", ol);
+		return "user_cart";
+		
+	}
+
+	@RequestMapping(value="/addToCart/{id}", method = RequestMethod.GET)
+	public String addToCart(@PathVariable("id") long id) {
+		Product product = ps.getProdById(id);
+		os.addToCart(product);
+		return "redirect:/cart";
+	}
 }
