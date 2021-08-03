@@ -1,8 +1,6 @@
 package com.michelle.service;
 
 import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,14 +31,17 @@ public class ProdService {
 	
 	public Product addOne(long id) throws ProdNotFoundException {
 		Product p1=pr.findById(id).orElseThrow(()->new ProdNotFoundException("product not found"));
-		p1.setProductQty(p1.getProductQty()+1);
+		if(p1.getInstockQty()> p1.getProductQty() && p1.getProductQty()>-1)
+			p1.setProductQty(p1.getProductQty()+1);
 		p1.setProductTotal(p1.getProductPrice()*p1.getProductQty());
+		
 		return p1;
 	}
 	
 	public Product minusOne(long id) throws ProdNotFoundException {
 		Product p1=pr.findById(id).orElseThrow(()->new ProdNotFoundException("product not found"));
-		p1.setProductQty(p1.getProductQty()-1);
+		if(p1.getInstockQty()>= p1.getProductQty() && p1.getProductQty()>0)
+			p1.setProductQty(p1.getProductQty()-1);
 		p1.setProductTotal(p1.getProductPrice()*p1.getProductQty());
 		return p1;
 	}

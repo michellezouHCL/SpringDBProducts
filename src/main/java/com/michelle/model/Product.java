@@ -33,6 +33,7 @@ public class Product {
 	private int productQty;
 	@Column(name = "total")
 	private float productTotal;
+	
 
 	public Product(long productId, String productName, float productPrice, int instockQty, int productQty) {
 		this.productId = productId;

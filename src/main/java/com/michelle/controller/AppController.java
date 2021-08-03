@@ -20,7 +20,8 @@ public class AppController {
 
 	@Autowired
 	ProdService ps;
-
+	
+	
 	@RequestMapping("/")
 	public String viewHomePage(Model model) {
 		List<Product> listProducts = ps.listAll();
@@ -63,6 +64,20 @@ public class AppController {
 	@RequestMapping("/addOne/{id}")
 	public String addOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
 		Product p1=ps.addOne(id);
+		/*
+		Order o = new Order();
+		Long userid=(long) 0;
+		String userName="";
+		Object principal = SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
+		if(principal instanceof MyUserDetails) {
+			userid = ((MyUserDetails) principal).getUserid();
+			userName = ((MyUserDetails) principal).getUsername();
+		}
+		o.setUserId(userid);
+		o.setUserName(userName);
+		o.setProdList( ps.listAll());
+		os.saveOrder(o);
+		*/
 		ps.save(p1);
 		return "redirect:/";
 	}
@@ -78,5 +93,6 @@ public class AppController {
 		ps.save(p1);
 		return "redirect:/";
 	}
+	
 	
 }

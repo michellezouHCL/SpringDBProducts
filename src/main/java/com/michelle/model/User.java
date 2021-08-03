@@ -28,7 +28,7 @@ public class User {
 	private String role;
 	private boolean enabled;
 
-	public User(long userId, String username, String password, String role, boolean enabled) {
+	public User(long userId, String username, String password, String role, boolean enabled, int cartTotal) {
 		this.userId = userId;
 		this.username = username;
 		this.password = password;
