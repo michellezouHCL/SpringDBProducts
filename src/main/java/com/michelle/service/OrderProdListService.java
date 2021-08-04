@@ -32,9 +32,10 @@ public class OrderProdListService {
 			o.setProductTotal(p.getProductPrice());
 			or.save(o);
 		} else {
-			if (o.getInstockQty() >= o.getProductQty() && o.getProductQty() > 0)
-				o.setProductQty(o.getProductQty() - 1);
+			if (o.getInstockQty() > o.getProductQty() && o.getProductQty() > -1)
+				o.setProductQty(o.getProductQty() + 1);
 			o.setProductTotal(o.getProductPrice() * o.getProductQty());
+			or.save(o);
 		}
 
 	}
@@ -69,6 +70,10 @@ public class OrderProdListService {
 
 	public void deleteOrder(long id) {
 		or.deleteById(id);
+	}
+	
+	public void deleteOPLByProdId(long id) {
+		or.deleteByProdId(id);
 	}
 
 	public OrderProdList findByProdId(long id) {

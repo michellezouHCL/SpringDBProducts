@@ -68,20 +68,6 @@ public class AppController {
 	@RequestMapping("/addOne/{id}")
 	public String addOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
 		OrderProdList p1=os.addOne(id);
-		/*
-		Order o = new Order();
-		Long userid=(long) 0;
-		String userName="";
-		Object principal = SecurityContextHolder. getContext(). getAuthentication(). getPrincipal();
-		if(principal instanceof MyUserDetails) {
-			userid = ((MyUserDetails) principal).getUserid();
-			userName = ((MyUserDetails) principal).getUsername();
-		}
-		o.setUserId(userid);
-		o.setUserName(userName);
-		o.setProdList( ps.listAll());
-		os.saveOrder(o);
-		*/
 		os.save(p1);
 		
 		return "redirect:/cart";
@@ -108,10 +94,16 @@ public class AppController {
 		
 	}
 
-	@RequestMapping(value="/addToCart/{id}", method = RequestMethod.GET)
-	public String addToCart(@PathVariable("id") long id) {
+	@RequestMapping(value="/addToCart/{id}")
+	public String addToCart(@PathVariable("id") Long id) {
 		Product product = ps.getProdById(id);
 		os.addToCart(product);
+		return "redirect:/cart";
+	}
+	
+	@RequestMapping(value="/deleteProdFromCart/{id}")
+	public String deleteProdFromCart(@PathVariable("id") Long id) {
+		os.deleteOPLByProdId(id);
 		return "redirect:/cart";
 	}
 }
