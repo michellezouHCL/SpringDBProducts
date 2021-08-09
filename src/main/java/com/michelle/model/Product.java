@@ -29,13 +29,16 @@ public class Product {
 	private float productPrice;
 	@Column(name="instock_qty")
 	private int instockQty;
+	@Column(name="product_category")
+	private String productCategory;
 	
 
-	public Product(long productId, String productName, float productPrice, int instockQty) {
+	public Product(long productId, String productName, float productPrice, int instockQty, String productCategory) {
 		this.productId = productId;
 		this.productName = productName;
 		this.productPrice = productPrice;
 		this.instockQty = instockQty;
+		this.productCategory = productCategory;
 	}
 	
 }
