@@ -22,6 +22,7 @@
 				<tr>
 					<th>Product ID</th>
 					<th>Name</th>
+					<th>Category</th>
 					<th>Price</th>
 					<th>Instock#</th>
 					<th>Actions</th>
@@ -31,6 +32,7 @@
 				<tr th:each="product : ${listProducts}">
 					<td th:text="${product.productId}">Product ID</td>
 					<td th:text="${product.productName}">Name</td>
+					<td th:text="${product.category.categoryName}">Category</td>
 					<td th:text="${product.productPrice}">Price</td>
 					<td th:text="${product.instockQty}">Instock#</td>
 					<td><a th:href="@{'/user/addToCart/' + ${product.productId}}">Add

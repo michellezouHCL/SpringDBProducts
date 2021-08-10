@@ -31,6 +31,7 @@
             <tr th:each="orderProdList : ${orderProdList}">
                 <td th:text="${orderProdList.productId}">Product ID</td>
                 <td th:text="${orderProdList.productName}">Name</td>
+                <td th:text="${orderProdList.category.categoryName}">Category</td>
                 <td th:text="${orderProdList.productPrice}">Price</td>
                 <td th:text="${orderProdList.instockQty}">Instock#</td>
                  <td  th:text="${orderProdList.productQty}">Quantity</td>

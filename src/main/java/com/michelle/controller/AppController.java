@@ -1,5 +1,6 @@
 package com.michelle.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.michelle.exception.ProdNotFoundException;
+import com.michelle.model.Category;
 import com.michelle.model.OrderProdList;
 import com.michelle.model.Product;
+
 import com.michelle.model.User;
 import com.michelle.repo.UserRepository;
+
+import com.michelle.service.CategoryService;
 import com.michelle.service.OrderProdListService;
 import com.michelle.service.ProdService;
 import com.michelle.service.UserDetailsServiceImpl;
@@ -35,6 +40,10 @@ public class AppController {
 
 	@Autowired
 	OrderProdListService os;
+	
+	@Autowired
+	CategoryService cs;
+
 	
 	@Autowired
 	UserRepository userRepository;
@@ -96,8 +105,9 @@ public class AppController {
 	public String showNewProductForm(Model model) {
 		Product product = new Product();
 		model.addAttribute("product", product);
-
-		return "/admin/new_product";
+		List<Category> categories = cs.listAll();
+	    model.addAttribute("categories", categories);
+	    return "/admin/new_product";
 	}
 
 	@RequestMapping(value = "/admin/save", method = RequestMethod.POST)
@@ -105,7 +115,7 @@ public class AppController {
 		ps.save(product);
 		OrderProdList o = os.findById(product.getProductId());
 		if(o!=null) {
-			
+			o.setCategory(product.getCategory());
 			o.setProductName(product.getProductName());
 			o.setProductPrice(product.getProductPrice());
 			o.setInstockQty(product.getInstockQty());
@@ -114,14 +124,26 @@ public class AppController {
 		return "redirect:/admin/home";
 	}
 
+
+
+//	public List<Category> getCategories() {
+//		List<Category> list = new ArrayList<Category>();
+//		list.add(new Category("", "Shirts"));
+//		list.add(new Category("", "Pants"));
+//		list.add(new Category("", "Socks"));
+//		list.add(new Category("", "Shoes"));
+//		return list;
+//	}
+
 	@RequestMapping("/admin/edit/{id}")
-	public ModelAndView showEditProductForm(@PathVariable(name = "id") Long id) {
-		ModelAndView mav = new ModelAndView("/admin/edit_product");
+	public String showEditProductForm(@PathVariable(name = "id") Long id, Model m) {
 
 		Product product = ps.getProdById(id);
-		mav.addObject("product", product);
-
-		return mav;
+		m.addAttribute("product", product);
+		List<Category> categories = cs.listAll();
+		
+	    m.addAttribute("categories", categories);
+		return "/admin/edit_product";
 	}
 
 	@RequestMapping("/admin/delete/{id}")
@@ -135,7 +157,6 @@ public class AppController {
 	public String addOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
 		OrderProdList p1 = os.addOne(id);
 		os.save(p1);
-
 		return "redirect:/user/cart";
 	}
 
@@ -167,6 +188,7 @@ public class AppController {
 		os.addToCart(product);
 		return "redirect:/user/cart";
 	}
+
 
 	@RequestMapping(value = "/user/deleteProdFromCart/{id}")
 	public String deleteProdFromCart(@PathVariable("id") Long id) {

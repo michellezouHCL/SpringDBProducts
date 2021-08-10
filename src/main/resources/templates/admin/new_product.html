@@ -5,27 +5,39 @@
 <title>Create New Product</title>
 </head>
 <body>
-	<div align="center">	
+	<div align="center">
 		<h1>Create New Product</h1>
 		<br/>
 		<form action="#" th:action="@{/admin/save}" th:object="${product}" method="post">
 			<table border="0" cellpadding="10">
 				<tr>
 					<td>Product ID:</td>
-					<td><input type="text" th:field="*{productId}" readonly="readonly" /></td>
-				</tr>			
+					<td><input type="text" th:field="*{productId}"
+						readonly="readonly" /></td>
+				</tr>
 				<tr>
 					<td>Product Name:</td>
 					<td><input type="text" th:field="*{productName}" /></td>
 				</tr>
 				<tr>
+					<td>Category:</td>
+					<td><div class="form-group blu-margin">
+							<select class="form-control" th:field="*{category}">
+								<th:block th:each="cat : ${categories}">
+								<option th:text="${cat.categoryName}"
+									th:value="${cat.categoryId}"></option>
+								</th:block>
+							</select>
+						</div></td>
+				</tr>
+				<tr>
 					<td>Price:</td>
 					<td><input type="text" th:field="*{productPrice}" /></td>
-				</tr>		
+				</tr>
 				<tr>
 					<td>Instock#:</td>
 					<td><input type="text" th:field="*{instockQty}" /></td>
-				</tr>					
+				</tr>
 				<tr>
 					<td colspan="2"><button type="submit">Save</button></td>
 				</tr>
