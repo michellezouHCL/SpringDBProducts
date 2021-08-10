@@ -1,0 +1,63 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+<title>Login</title>
+</head>
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" />
+<body>
+	<h2>Welcome to login page</h2>
+	<form th:action="@{/login}" method="post">
+		<div id="loginTable">
+			<table>
+				<tbody>
+					<tr>
+						<td><label for="username">Username</label></td>
+						<td><input type="text" name="username" class="form-control"
+							placeholder="Username" required autofocus /></td>
+					</tr>
+					<tr>
+						<td><label for="password">Password</label></td>
+						<td><input id="pass_log_id" type="password" name="password"
+							class="form-control" placeholder="Password" required /> <span
+							toggle="#password-field"
+							class="fa fa-fw fa-eye field_icon toggle-password"></span></td>
+					</tr>
+					<tr>
+						<td><input type="submit" value="Sign In"></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<div class="error" th:if="${param.error}">Invalid username
+								or password.</div>
+							<div class="info" th:if="${param.logout}">You have been
+								logged out.</div>
+						</td>
+					</tr>
+					<tr>
+						<td><a  th:href="@{/registration}">Register as New User</a></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</form>
+	
+	<script type="text/javascript">
+		$(document).on(
+				'click',
+				'.toggle-password',
+				function() {
+
+					$(this).toggleClass("fa-eye fa-eye-slash");
+
+					var input = $("#pass_log_id");
+					input.attr('type') === 'password' ? input.attr('type',
+							'text') : input.attr('type', 'password')
+				});
+		
+		
+	</script>
+
+</body>
+</html>

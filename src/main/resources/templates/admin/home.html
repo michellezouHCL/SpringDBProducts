@@ -13,8 +13,7 @@
 		<input type="submit" value="Logout" />
 	</form>
     <h1>Product List</h1>
-    <a href="/new" sec:authorize="hasRole('ROLE_ADMIN')">Create New Product</a>
-    <a sec:authorize="hasRole('ROLE_USER')" href="/cart">Cart</a>
+    <a href="/admin/new" >Create New Product</a>
     <br/><br/>
     <table border="1" cellpadding="10">
         <thead>
@@ -23,23 +22,19 @@
                 <th>Name</th>
                 <th>Price</th>
                 <th>Instock#</th>
-                <th sec:authorize="hasRole('ROLE_ADMIN')">Actions</th>
-                <th sec:authorize="hasRole('ROLE_USER')">Actions</th>
+                <th >Actions</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="product : ${listProducts}">
+            <tr th:each="product : ${adminlistProd}">
                 <td th:text="${product.productId}">Product ID</td>
                 <td th:text="${product.productName}">Name</td>
                 <td th:text="${product.productPrice}">Price</td>
                 <td th:text="${product.instockQty}">Instock#</td>
-                <td sec:authorize="hasRole('ROLE_ADMIN')">
-                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/edit/' + ${product.productId}}">Edit</a>
+                <td >
+                    <a  th:href="@{'/admin/edit/' + ${product.productId}}">Edit</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a sec:authorize="hasRole('ROLE_ADMIN')" th:href="@{'/delete/' + ${product.productId}}">Delete</a>
-                 </td>
-                 <td sec:authorize="hasRole('ROLE_USER')">
-                 	<a sec:authorize="hasRole('ROLE_USER')" th:href="@{'/addToCart/' + ${product.productId}}">Add To Cart</a>
+                    <a th:href="@{'/admin/delete/' + ${product.productId}}">Delete</a>
                  </td>
             </tr>
         </tbody>

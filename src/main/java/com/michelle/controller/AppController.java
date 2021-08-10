@@ -3,10 +3,13 @@ package com.michelle.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,43 +17,106 @@ import org.springframework.web.servlet.ModelAndView;
 import com.michelle.exception.ProdNotFoundException;
 import com.michelle.model.OrderProdList;
 import com.michelle.model.Product;
+import com.michelle.model.User;
+import com.michelle.repo.UserRepository;
 import com.michelle.service.OrderProdListService;
 import com.michelle.service.ProdService;
+import com.michelle.service.UserDetailsServiceImpl;
+import com.michelle.service.MyUserDetails;
 
 @Controller
 public class AppController {
 
 	@Autowired
+	UserDetailsServiceImpl us;
+
+	@Autowired
 	ProdService ps;
-	
+
 	@Autowired
 	OrderProdListService os;
 	
+	@Autowired
+	UserRepository userRepository;
+
+	@RequestMapping("/login")
+	public String login() {
+		return "login";
+	}
+	
 	@RequestMapping("/")
+	public String sendToPage(Authentication auth) {
+		if(!auth.isAuthenticated()) {
+			return "redirect:/login?error";
+		} else if( ((MyUserDetails) auth.getPrincipal()).hasRole("ROLE_ADMIN")){
+			return "redirect:/admin/home";
+		}else {
+			return "redirect:/user/home";
+		}
+	}
+	
+	@RequestMapping("/registration")
+	public String showRegistrationForm(Model model) {
+		User user = new User();
+		model.addAttribute("user",user);
+		return "registration";
+	}
+	
+	@PostMapping("/process_registration")
+	public String prcoessRegistration(User user) {
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+	    String encodedPassword = passwordEncoder.encode(user.getPassword());
+	    user.setPassword(encodedPassword);
+	    
+	    userRepository.save(user);
+	    return "register_success";
+	}
+	
+	@RequestMapping("/logout")
+	public String logout() {
+		return "logout";
+	}
+	
+	
+	@RequestMapping("/admin/home")
 	public String viewHomePage(Model model) {
 		List<Product> listProducts = ps.listAll();
-		model.addAttribute("listProducts", listProducts);
-		return "index";
+		model.addAttribute("adminlistProd", listProducts);
+		return "/admin/home";
 	}
 
-	@RequestMapping("/new")
+	@RequestMapping("/user/home")
+	public String userHome(Model m) {
+		List<Product> listProduct = ps.listAll();
+		m.addAttribute("listProducts", listProduct);
+		return "/user/home";
+	}
+
+	@RequestMapping("/admin/new")
 	public String showNewProductForm(Model model) {
 		Product product = new Product();
 		model.addAttribute("product", product);
 
-		return "new_product";
+		return "/admin/new_product";
 	}
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	@RequestMapping(value = "/admin/save", method = RequestMethod.POST)
 	public String saveProduct(@ModelAttribute("product") Product product) {
 		ps.save(product);
-
-		return "redirect:/";
+		OrderProdList o = os.findById(product.getProductId());
+		if(o!=null) {
+			
+			o.setProductName(product.getProductName());
+			o.setProductPrice(product.getProductPrice());
+			o.setInstockQty(product.getInstockQty());
+			os.save(o);
+		}
+		return "redirect:/admin/home";
 	}
 
-	@RequestMapping("/edit/{id}")
+	@RequestMapping("/admin/edit/{id}")
 	public ModelAndView showEditProductForm(@PathVariable(name = "id") Long id) {
-		ModelAndView mav = new ModelAndView("edit_product");
+		ModelAndView mav = new ModelAndView("/admin/edit_product");
 
 		Product product = ps.getProdById(id);
 		mav.addObject("product", product);
@@ -58,52 +124,53 @@ public class AppController {
 		return mav;
 	}
 
-	@RequestMapping("/delete/{id}")
+	@RequestMapping("/admin/delete/{id}")
 	public String deleteProduct(@PathVariable(name = "id") Long id) {
 		ps.deleteProd(id);
-
-		return "redirect:/";
+		os.deleteOPLByProdId(id);
+		return "redirect:/admin/home";
 	}
 
-	@RequestMapping("/addOne/{id}")
+	@RequestMapping("/user/addOne/{id}")
 	public String addOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
-		OrderProdList p1=os.addOne(id);
+		OrderProdList p1 = os.addOne(id);
 		os.save(p1);
-		
-		return "redirect:/cart";
+
+		return "redirect:/user/cart";
 	}
-	@RequestMapping("/minusOne/{id}")
+
+	@RequestMapping("/user/minusOne/{id}")
 	public String minusOneProd(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
-		OrderProdList p1=os.minusOne(id);
+		OrderProdList p1 = os.minusOne(id);
 		os.save(p1);
-		return "redirect:/cart";
+		return "redirect:/user/cart";
 	}
-	@RequestMapping("/clear/{id}")
+
+	@RequestMapping("/user/clear/{id}")
 	public String clearCart(@PathVariable(name = "id") Long id) throws ProdNotFoundException {
-		OrderProdList p1=os.clearCart(id);
+		OrderProdList p1 = os.clearCart(id);
 		os.save(p1);
-		return "redirect:/cart";
+		return "redirect:/user/cart";
 	}
-	
-	
-	@RequestMapping("/cart")
+
+	@RequestMapping("/user/cart")
 	public String cart(Model m) {
 		List<OrderProdList> ol = os.getAll();
 		m.addAttribute("orderProdList", ol);
-		return "user_cart";
-		
+		return "/user/user_cart";
+
 	}
 
-	@RequestMapping(value="/addToCart/{id}")
+	@RequestMapping(value = "/user/addToCart/{id}")
 	public String addToCart(@PathVariable("id") Long id) {
 		Product product = ps.getProdById(id);
 		os.addToCart(product);
-		return "redirect:/cart";
+		return "redirect:/user/cart";
 	}
-	
-	@RequestMapping(value="/deleteProdFromCart/{id}")
+
+	@RequestMapping(value = "/user/deleteProdFromCart/{id}")
 	public String deleteProdFromCart(@PathVariable("id") Long id) {
 		os.deleteOPLByProdId(id);
-		return "redirect:/cart";
+		return "redirect:/user/cart";
 	}
 }

@@ -13,7 +13,7 @@
 		<input type="submit" value="Logout" />
 	</form>
     <h1>Cart</h1>
-    <a class="navlist" href="/"> Home </a>
+    <a class="navlist" href="/user/home"> Home </a>
     <br/><br/>
     <table border="1" cellpadding="10">
         <thead>
@@ -36,13 +36,13 @@
                  <td  th:text="${orderProdList.productQty}">Quantity</td>
                  <td  th:text="${orderProdList.productTotal}" class="count-me">Total</td>
                  <td >
-                 	<a th:href="@{'/addOne/' + ${orderProdList.productId}}">&uarr;</a>
+                 	<a th:href="@{'/user/addOne/' + ${orderProdList.productId}}">&uarr;</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a th:href="@{'/minusOne/' + ${orderProdList.productId}}">&darr;</a>
+                    <a th:href="@{'/user/minusOne/' + ${orderProdList.productId}}">&darr;</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a th:href="@{'/clear/' + ${orderProdList.productId}}">clear</a>
+                    <a th:href="@{'/user/clear/' + ${orderProdList.productId}}">clear</a>
                     &nbsp;&nbsp;&nbsp;
-                    <a th:href="@{'/deleteProdFromCart/' + ${orderProdList.productId}}">X</a>
+                    <a th:href="@{'/user/deleteProdFromCart/' + ${orderProdList.productId}}">X</a>
                  </td>
                  
             </tr>
