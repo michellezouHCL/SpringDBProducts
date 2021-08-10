@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.michelle.model.Category;
+import com.michelle.model.Product;
 import com.michelle.repo.CategoryRepository;
 
 
@@ -16,6 +17,7 @@ public class CategoryService {
 	@Autowired
 	private CategoryRepository cr;
 
+	
 	
 	public List<Category> listAll() {
 		return cr.findAll();

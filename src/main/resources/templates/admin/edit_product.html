@@ -7,8 +7,9 @@
 <body>
 	<div align="center">
 		<h1>Edit Product</h1>
-		<br/>
-		<form action="#" th:action="@{/admin/save}" th:object="${product}" method="post">
+		<br />
+		<form action="#" th:action="@{/admin/save}" th:object="${product}"
+			method="post" enctype="multipart/form-data">
 			<table border="0" cellpadding="10">
 				<tr>
 					<td>Product ID:</td>
@@ -24,10 +25,22 @@
 					<td><div class="form-group blu-margin">
 							<select class="form-control" th:field="*{category}">
 								<th:block th:each="cat : ${categories}">
-								<option th:text="${cat.categoryName}"
-									th:value="${cat.categoryId}"></option>
+									<option th:text="${cat.categoryName}"
+										th:value="${cat.categoryId}"></option>
 								</th:block>
 							</select>
+						</div></td>
+				</tr>
+				<tr>
+					<td><div>
+							<label>Photos: </label> <input type="file" name="image"
+								accept="image/png, image/jpeg" onchange="loadFile(event)" />
+						</div></td>
+				</tr>
+				<tr>
+					<td><div>
+							<img id="thumbnail" alt="Photo Preview" width="100px"
+								height="100px" />
 						</div></td>
 				</tr>
 				<tr>
@@ -44,5 +57,14 @@
 			</table>
 		</form>
 	</div>
+	<script type="text/javascript">
+		var loadFile = function(event) {
+			var output = document.getElementById('thumbnail');
+			output.src = URL.createObjectURL(event.target.files[0]);
+			output.onload = function() {
+				URL.revokeObjectURL(thumbnail.src) // free memory
+			}
+		};
+	</script>
 </body>
 </html>

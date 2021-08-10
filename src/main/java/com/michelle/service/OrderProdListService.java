@@ -19,6 +19,7 @@ public class OrderProdListService {
 	public void save(OrderProdList orderProdList) {
 		or.save(orderProdList);
 	}
+	
 
 	public void addToCart(Product p) {
 		OrderProdList o = or.findByProdId(p.getProductId());
@@ -30,6 +31,8 @@ public class OrderProdListService {
 			o.setProductPrice(p.getProductPrice());
 			o.setProductQty(1);
 			o.setProductTotal(p.getProductPrice());
+			o.setPhotos(p.getPhotos());
+			o.setCategory(p.getCategory());
 			or.save(o);
 		} else {
 			if (o.getInstockQty() > o.getProductQty() && o.getProductQty() > -1)

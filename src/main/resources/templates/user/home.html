@@ -15,14 +15,21 @@
 			<input type="submit" value="Logout" />
 		</form>
 		<h1>Product List</h1>
-		<a href="/user/cart">Cart</a> <br />
-		<br />
+		<form th:action="@{/user/home}" method="get">
+			<input id="txtSearch" type="text" name="keyword" placeholder="id/name/price/category"> &nbsp;
+			<button type="submit">Search</button>
+			&nbsp; 
+			<input type="button" value="Clear" id="btnClear"
+				onclick="clearSearch()" />
+		</form>
+		<a href="/user/cart">Cart</a> <br /> <br />
 		<table border="1" cellpadding="10">
 			<thead>
 				<tr>
 					<th>Product ID</th>
 					<th>Name</th>
 					<th>Category</th>
+					<th>Image</th>
 					<th>Price</th>
 					<th>Instock#</th>
 					<th>Actions</th>
@@ -33,6 +40,7 @@
 					<td th:text="${product.productId}">Product ID</td>
 					<td th:text="${product.productName}">Name</td>
 					<td th:text="${product.category.categoryName}">Category</td>
+					<td><img th:src="${product.photosImagePath}" style="width: 100px; height: 100px;" /></td>
 					<td th:text="${product.productPrice}">Price</td>
 					<td th:text="${product.instockQty}">Instock#</td>
 					<td><a th:href="@{'/user/addToCart/' + ${product.productId}}">Add
@@ -41,5 +49,10 @@
 			</tbody>
 		</table>
 	</div>
+	<script type="text/javascript">
+		function clearSearch() {
+			window.location = "[[@{/}]]";
+		}
+	</script>
 </body>
 </html>

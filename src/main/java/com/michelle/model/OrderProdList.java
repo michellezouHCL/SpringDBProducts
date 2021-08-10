@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Data;
 import lombok.Getter;
@@ -38,9 +39,11 @@ public class OrderProdList {
 	@Column(name = "total")
 	private float productTotal;
 	@ManyToOne
-	@JoinColumn(name="category")
+	@JoinColumn(name="category_id")
 	private Category category;
 	
+	@Column(nullable = true, length = 64)
+    private String photos;
 
 	public OrderProdList(long orderId, long productId, String productName, float productPrice, int instockQty, int productQty, Category category) {
 		this.orderId=orderId;
@@ -52,4 +55,19 @@ public class OrderProdList {
 		this.productTotal = productQty*productPrice;
 		this.category=category;
 	}
+	
+	public void setCategoryById(Long id) {
+		this.category.setCategoryId(id);
+	}
+	public void setCategoryName(String name) {
+		this.category.setCategoryName(name);
+	}
+	
+	@Transient
+    public String getPhotosImagePath() {
+        if (photos == null) return null;
+         
+        return "/product-photos/" + productId + "/" + photos;
+    }
+	
 }

@@ -1,5 +1,6 @@
 package com.michelle.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,12 +9,16 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.michelle.exception.ProdNotFoundException;
 import com.michelle.model.Category;
@@ -24,9 +29,12 @@ import com.michelle.model.User;
 import com.michelle.repo.UserRepository;
 
 import com.michelle.service.CategoryService;
+import com.michelle.service.FileUploadUtil;
 import com.michelle.service.OrderProdListService;
 import com.michelle.service.ProdService;
 import com.michelle.service.UserDetailsServiceImpl;
+
+
 import com.michelle.service.MyUserDetails;
 
 @Controller
@@ -40,11 +48,10 @@ public class AppController {
 
 	@Autowired
 	OrderProdListService os;
-	
+
 	@Autowired
 	CategoryService cs;
 
-	
 	@Autowired
 	UserRepository userRepository;
 
@@ -52,52 +59,71 @@ public class AppController {
 	public String login() {
 		return "login";
 	}
-	
+
 	@RequestMapping("/")
 	public String sendToPage(Authentication auth) {
-		if(!auth.isAuthenticated()) {
+		if (!auth.isAuthenticated()) {
 			return "redirect:/login?error";
-		} else if( ((MyUserDetails) auth.getPrincipal()).hasRole("ROLE_ADMIN")){
+		} else if (((MyUserDetails) auth.getPrincipal()).hasRole("ROLE_ADMIN")) {
 			return "redirect:/admin/home";
-		}else {
+		} else {
 			return "redirect:/user/home";
 		}
 	}
-	
+
 	@RequestMapping("/registration")
 	public String showRegistrationForm(Model model) {
 		User user = new User();
-		model.addAttribute("user",user);
+		model.addAttribute("user", user);
 		return "registration";
 	}
-	
+
 	@PostMapping("/process_registration")
 	public String prcoessRegistration(User user) {
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	    String encodedPassword = passwordEncoder.encode(user.getPassword());
-	    user.setPassword(encodedPassword);
-	    
-	    userRepository.save(user);
-	    return "register_success";
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
+
+		userRepository.save(user);
+		return "register_success";
 	}
-	
+
 	@RequestMapping("/logout")
 	public String logout() {
 		return "logout";
 	}
-	
-	
+
 	@RequestMapping("/admin/home")
-	public String viewHomePage(Model model) {
-		List<Product> listProducts = ps.listAll();
-		model.addAttribute("adminlistProd", listProducts);
+	public String viewHomePage(Model model, String keyword) {
+		if (keyword != null) {
+			if (ps.findByKeyword(keyword).isEmpty()) {
+				model.addAttribute("adminlistProd", ps.findByCategory(keyword));
+			} else {
+				model.addAttribute("adminlistProd", ps.findByKeyword(keyword));
+			}
+
+		} else {
+			List<Product> listProducts = ps.listAll();
+			model.addAttribute("adminlistProd", listProducts);
+		}
 		return "/admin/home";
 	}
 
 	@RequestMapping("/user/home")
-	public String userHome(Model m) {
-		List<Product> listProduct = ps.listAll();
-		m.addAttribute("listProducts", listProduct);
+	public String userHome(Model m, String keyword) {
+		if (keyword != null) {
+			// m.addAttribute("adminlistProd", ps.findByKeyword(keyword));
+
+			if (ps.findByKeyword(keyword).isEmpty()) {
+				m.addAttribute("listProducts", ps.findByCategory(keyword));
+			} else {
+				m.addAttribute("listProducts", ps.findByKeyword(keyword));
+			}
+
+		} else {
+			List<Product> listProduct = ps.listAll();
+			m.addAttribute("listProducts", listProduct);
+		}
 		return "/user/home";
 	}
 
@@ -106,25 +132,30 @@ public class AppController {
 		Product product = new Product();
 		model.addAttribute("product", product);
 		List<Category> categories = cs.listAll();
-	    model.addAttribute("categories", categories);
-	    return "/admin/new_product";
+		model.addAttribute("categories", categories);
+		return "/admin/new_product";
 	}
 
 	@RequestMapping(value = "/admin/save", method = RequestMethod.POST)
-	public String saveProduct(@ModelAttribute("product") Product product) {
+	public RedirectView saveProduct(@ModelAttribute("product") Product product,
+			@RequestParam("image") MultipartFile multipartFile) throws IOException {
+		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+        product.setPhotos(fileName);
 		ps.save(product);
+		String uploadDir = "src/main/resources/static/product-photos/" + product.getProductId();
+		 
+        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
 		OrderProdList o = os.findById(product.getProductId());
-		if(o!=null) {
+		if (o != null) {
 			o.setCategory(product.getCategory());
 			o.setProductName(product.getProductName());
 			o.setProductPrice(product.getProductPrice());
 			o.setInstockQty(product.getInstockQty());
+			o.setPhotos(product.getPhotos());
 			os.save(o);
 		}
-		return "redirect:/admin/home";
+		return new RedirectView("/admin/home", true);
 	}
-
-
 
 //	public List<Category> getCategories() {
 //		List<Category> list = new ArrayList<Category>();
@@ -141,8 +172,8 @@ public class AppController {
 		Product product = ps.getProdById(id);
 		m.addAttribute("product", product);
 		List<Category> categories = cs.listAll();
-		
-	    m.addAttribute("categories", categories);
+
+		m.addAttribute("categories", categories);
 		return "/admin/edit_product";
 	}
 
@@ -188,7 +219,6 @@ public class AppController {
 		os.addToCart(product);
 		return "redirect:/user/cart";
 	}
-
 
 	@RequestMapping(value = "/user/deleteProdFromCart/{id}")
 	public String deleteProdFromCart(@PathVariable("id") Long id) {

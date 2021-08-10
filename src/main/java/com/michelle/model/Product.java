@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import lombok.Data;
 import lombok.Getter;
@@ -35,6 +36,9 @@ public class Product {
 	@JoinColumn(name="category_id")
 	private Category category;
 	
+    @Column(nullable = true, length = 64)
+    private String photos;
+	
 
 	public Product(long productId, String productName, float productPrice, int instockQty, Category category) {
 		this.productId = productId;
@@ -43,5 +47,13 @@ public class Product {
 		this.instockQty = instockQty;
 		this.category = category;
 	}
+	
+	
+	@Transient
+    public String getPhotosImagePath() {
+        if (photos == null) return null;
+         
+        return "/product-photos/" + productId + "/" + photos;
+    }
 	
 }

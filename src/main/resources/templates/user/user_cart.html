@@ -20,6 +20,7 @@
             <tr>
                 <th>Product ID</th>
                 <th>Name</th>
+                <th>Category</th>
                 <th>Price</th>
                 <th>Instock#</th>
                 <th>Quantity</th>		
@@ -32,6 +33,7 @@
                 <td th:text="${orderProdList.productId}">Product ID</td>
                 <td th:text="${orderProdList.productName}">Name</td>
                 <td th:text="${orderProdList.category.categoryName}">Category</td>
+                <td><img th:src="${orderProdList.photosImagePath}" style="width: 100px; height: 100px;" /></td>
                 <td th:text="${orderProdList.productPrice}">Price</td>
                 <td th:text="${orderProdList.instockQty}">Instock#</td>
                  <td  th:text="${orderProdList.productQty}">Quantity</td>

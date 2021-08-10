@@ -30,6 +30,8 @@ public class Category {
 	private String categoryName;
 	@OneToMany(mappedBy="category")
 	private List<Product> products;
+	@OneToMany(mappedBy="category")
+	private List<OrderProdList> orderProdLists;
 	
 
 	public Category(long categoryId, String categoryName) {
