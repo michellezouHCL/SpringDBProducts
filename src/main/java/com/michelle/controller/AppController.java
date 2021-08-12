@@ -155,8 +155,14 @@ public class AppController {
 	@RequestMapping(value = "/admin/save", method = RequestMethod.POST)
 	public RedirectView saveProduct(@ModelAttribute("product") Product product,
 			@RequestParam("image") MultipartFile multipartFile) throws IOException {
-		byte[] file = multipartFile.getBytes();
-		product.setPhotos(file);
+		if(multipartFile.isEmpty()) {
+			Product p =ps.getProdById(product.getProductId());
+			product.setPhotos(p.getPhotos());
+		} else {
+			
+			byte[] file = multipartFile.getBytes();
+			product.setPhotos(file);
+		}
 		ps.save(product);
 
 		OrderProdList o = os.findById(product.getProductId());
