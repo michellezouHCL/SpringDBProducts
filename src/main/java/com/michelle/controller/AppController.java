@@ -1,10 +1,18 @@
 package com.michelle.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -16,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -29,11 +38,9 @@ import com.michelle.model.User;
 import com.michelle.repo.UserRepository;
 
 import com.michelle.service.CategoryService;
-import com.michelle.service.FileUploadUtil;
 import com.michelle.service.OrderProdListService;
 import com.michelle.service.ProdService;
 import com.michelle.service.UserDetailsServiceImpl;
-
 
 import com.michelle.service.MyUserDetails;
 
@@ -94,26 +101,35 @@ public class AppController {
 	}
 
 	@RequestMapping("/admin/home")
-	public String viewHomePage(Model model, String keyword) {
+	public String viewHomePage(ModelAndView mv, Model m, String keyword) throws IOException {
+
 		if (keyword != null) {
 			if (ps.findByKeyword(keyword).isEmpty()) {
-				model.addAttribute("adminlistProd", ps.findByCategory(keyword));
+
+				m.addAttribute("adminlistProd", ps.findByCategory(keyword));
 			} else {
-				model.addAttribute("adminlistProd", ps.findByKeyword(keyword));
+				m.addAttribute("adminlistProd", ps.findByKeyword(keyword));
 			}
 
 		} else {
 			List<Product> listProducts = ps.listAll();
-			model.addAttribute("adminlistProd", listProducts);
+			m.addAttribute("adminlistProd", listProducts);
 		}
+
 		return "/admin/home";
+	}
+
+	@RequestMapping(value = "/photoCat", produces = MediaType.IMAGE_JPEG_VALUE)
+	@ResponseBody
+	public byte[] photoCat(Long id) throws IOException {
+		Product p = ps.getProdById(id);
+		return org.apache.commons.io.IOUtils.toByteArray(new ByteArrayInputStream(p.getPhotos()));
 	}
 
 	@RequestMapping("/user/home")
 	public String userHome(Model m, String keyword) {
 		if (keyword != null) {
 			// m.addAttribute("adminlistProd", ps.findByKeyword(keyword));
-
 			if (ps.findByKeyword(keyword).isEmpty()) {
 				m.addAttribute("listProducts", ps.findByCategory(keyword));
 			} else {
@@ -139,12 +155,10 @@ public class AppController {
 	@RequestMapping(value = "/admin/save", method = RequestMethod.POST)
 	public RedirectView saveProduct(@ModelAttribute("product") Product product,
 			@RequestParam("image") MultipartFile multipartFile) throws IOException {
-		String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
-        product.setPhotos(fileName);
+		byte[] file = multipartFile.getBytes();
+		product.setPhotos(file);
 		ps.save(product);
-		String uploadDir = "src/main/resources/static/product-photos/" + product.getProductId();
-		 
-        FileUploadUtil.saveFile(uploadDir, fileName, multipartFile);
+
 		OrderProdList o = os.findById(product.getProductId());
 		if (o != null) {
 			o.setCategory(product.getCategory());

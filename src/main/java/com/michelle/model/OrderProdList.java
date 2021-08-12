@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -42,8 +43,8 @@ public class OrderProdList {
 	@JoinColumn(name="category_id")
 	private Category category;
 	
-	@Column(nullable = true, length = 64)
-    private String photos;
+	@Lob
+    private byte[] photos;
 
 	public OrderProdList(long orderId, long productId, String productName, float productPrice, int instockQty, int productQty, Category category) {
 		this.orderId=orderId;
@@ -63,11 +64,5 @@ public class OrderProdList {
 		this.category.setCategoryName(name);
 	}
 	
-	@Transient
-    public String getPhotosImagePath() {
-        if (photos == null) return null;
-         
-        return "/product-photos/" + productId + "/" + photos;
-    }
 	
 }

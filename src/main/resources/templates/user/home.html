@@ -40,7 +40,8 @@
 					<td th:text="${product.productId}">Product ID</td>
 					<td th:text="${product.productName}">Name</td>
 					<td th:text="${product.category.categoryName}">Category</td>
-					<td><img th:src="${product.photosImagePath}" style="width: 100px; height: 100px;" /></td>
+					<td><img th:src="${'/photoCat?id=' + product.productId}"
+						style="width: 100px; height: 100px;" /></td>
 					<td th:text="${product.productPrice}">Price</td>
 					<td th:text="${product.instockQty}">Instock#</td>
 					<td><a th:href="@{'/user/addToCart/' + ${product.productId}}">Add

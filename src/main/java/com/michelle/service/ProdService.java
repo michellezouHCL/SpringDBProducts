@@ -1,9 +1,14 @@
 package com.michelle.service;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 
 import com.michelle.exception.ProdNotFoundException;
 import com.michelle.model.Product;
@@ -26,7 +31,10 @@ public class ProdService {
 	public Product getProdById(long id) {
 		return pr.findById(id).get();
 	}
+	
 
+	
+	
 	/*
 	 * public Product addOne(long id) throws ProdNotFoundException { Product
 	 * p1=pr.findById(id).orElseThrow(()->new

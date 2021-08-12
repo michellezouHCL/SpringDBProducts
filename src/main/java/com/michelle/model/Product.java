@@ -1,11 +1,14 @@
 package com.michelle.model;
 
+import java.util.Base64;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -35,25 +38,19 @@ public class Product {
 	@ManyToOne
 	@JoinColumn(name="category_id")
 	private Category category;
-	
-    @Column(nullable = true, length = 64)
-    private String photos;
+	@Lob
+    private byte[] photos;
 	
 
-	public Product(long productId, String productName, float productPrice, int instockQty, Category category) {
+	public Product(long productId, String productName, float productPrice, int instockQty, Category category, byte[] photos) {
 		this.productId = productId;
 		this.productName = productName;
 		this.productPrice = productPrice;
 		this.instockQty = instockQty;
 		this.category = category;
+		this.photos=photos;
 	}
+
 	
-	
-	@Transient
-    public String getPhotosImagePath() {
-        if (photos == null) return null;
-         
-        return "/product-photos/" + productId + "/" + photos;
-    }
 	
 }
